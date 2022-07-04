@@ -1,14 +1,14 @@
-import com.sun.org.apache.xml.internal.security.algorithms.SignatureAlgorithm;
 import org.jose4j.jwk.RsaJsonWebKey;
 import org.jose4j.jwk.RsaJwkGenerator;
 import org.jose4j.jws.AlgorithmIdentifiers;
 import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.jwt.JwtClaims;
+import org.jose4j.jwt.MalformedClaimException;
+import org.jose4j.jwt.consumer.InvalidJwtException;
+import org.jose4j.jwt.consumer.JwtConsumer;
+import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 import org.jose4j.lang.JoseException;
 
-import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
-import java.security.Key;
 import java.util.Random;
 import java.util.UUID;
 
@@ -33,7 +33,7 @@ class RsaJsonWebKeyUtil{
 }
 public class JWTUtil {
 
-    public static RsaJsonWebKey rsaJsonWebKey = RsaJsonWebKeyUtil.getInstance();
+    private static RsaJsonWebKey rsaJsonWebKey = RsaJsonWebKeyUtil.getInstance();
 
 
     public static String createJWT(long UserId) throws JoseException {
@@ -71,6 +71,23 @@ public class JWTUtil {
         return jwt;
     }
 
+    public String checkJWT(String jwt)  {
+        JwtConsumer jwtConsumer = new JwtConsumerBuilder().setRequireExpirationTime()  // JWT必须有一个有效期时间
+                .setAllowedClockSkewInSeconds(30) // 允许在验证基于时间的令牌时留有一定的余地，以计算时钟偏差。单位/秒
+                .setRequireSubject() // 主题声明
+                .setExpectedIssuer("Issuer") // JWT需要由谁来发布,用来验证 发布人
+                .setExpectedAudience("Audience") // JWT的目的是给谁, 用来验证观众
+                .setVerificationKey(rsaJsonWebKey.getKey()) // 用公钥验证签名 ,验证秘钥
+                .build();
+        try
+        {
+            JwtClaims jwtClaims = jwtConsumer.processToClaims(jwt);
+            System.out.println("success!");
+            return jwtClaims.getJwtId();
+        }catch (InvalidJwtException | MalformedClaimException e){
+            return null;
+        }
+    }
 
 
 }
