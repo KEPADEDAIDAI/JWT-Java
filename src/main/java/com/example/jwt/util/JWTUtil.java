@@ -19,11 +19,11 @@ public class JWTUtil {
     private static RsaJsonWebKey rsaJsonWebKey ;
 
 
-    public String createJWT(long userId) throws JoseException {
+    public String createJWT(String userId) throws JoseException {
         return createJWT(userId, 30);
     }
 
-    public static String createJWT(long userId, long minutes) throws JoseException {
+    public static String createJWT(String userId, long minutes) throws JoseException {
         rsaJsonWebKey = RsaJsonWebKeyUtil.getInstance();
         // JWT的中间部分
         JwtClaims claims = new JwtClaims();
@@ -43,11 +43,11 @@ public class JWTUtil {
         claims.setExpirationTimeMinutesInTheFuture(minutes);
         // 结束时间，时间戳
 //        claims.setExpirationTime();
-        claims.setClaim("userId", String.valueOf(userId));
+        claims.setClaim("userId", userId);
         JsonWebSignature jws = new JsonWebSignature();
         jws.setPayload(claims.toJson());
         jws.setKey(rsaJsonWebKey.getPrivateKey());
-        jws.setHeader("typ", "JWT");
+//        jws.setHeader("typ", "JWT");
         jws.setAlgorithmHeaderValue(AlgorithmIdentifiers.RSA_USING_SHA256);
         String jwt = jws.getCompactSerialization();
 //        System.out.println(jwt);

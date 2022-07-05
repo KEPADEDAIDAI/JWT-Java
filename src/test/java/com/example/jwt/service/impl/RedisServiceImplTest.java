@@ -20,7 +20,7 @@ class RedisServiceImplTest {
     @Test
     void set() throws JoseException, MalformedClaimException {
 
-        String jwt = JWTUtil.createJWT(123456, 30);
+        String jwt = JWTUtil.createJWT("123456", 30);
         System.out.println(jwt);
         JwtClaims jwtClaims = JWTUtil.checkJWT(jwt);
         assert jwtClaims != null;
