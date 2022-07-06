@@ -18,7 +18,7 @@ public class JWTController {
 
     @GetMapping("/getJWT/{id}")
     public String getJWT(@PathVariable("id") String id) throws JoseException {
-        return JWTUtil.createJWT(id, 30);
+        return JWTUtil.createJWT(id, 30,15);
     }
 
     @GetMapping("/checkJWT/{jwt}")
